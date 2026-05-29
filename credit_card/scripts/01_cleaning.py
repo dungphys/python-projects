@@ -206,7 +206,7 @@ if outlier_report:
         record("outlier_flag",
                f"{col}: {info['n_outliers']} outliers ({info['pct']}%) "
                f"outside [{info['lower_fence']}, {info['upper_fence']}]")
-    print("\n  NOTE: Outliers are flagged only. "
+    print("\n NOTE: Outliers are flagged only. "
           "Set FORCE_DROP_COLS or add a capping step if removal is needed.")
 else:
     record("outlier_flag", "No IQR outliers detected in any numeric column")
