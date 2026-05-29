@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="card p-5">
+    <h2 class="text-success text-center mb-4">Your Stats</h2>
+
+    {% if attempts == 0 %}
+    <p class="text-center text-muted">No stats recorded yet. Play a quiz!</p>
+    {% else %}
+    <h4 class="text-center mb-4">Overall Accuracy: {{ overall_acc }}%</h4>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Word</th>
+                    <th>Accuracy</th>
+                    <th>Fastest Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for word, data in stats.items() %}
+                {% if data.attempts > 0 %}
+                <tr>
+                    <td>{{ word }}</td>
+                    <td>{{ "%.1f"|format((data.correct / data.attempts) * 100) }}%</td>
+                    <td>{% if data.correct > 0 %}{{ data.fastest_time }}s{% else %}N/A{% endif %}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

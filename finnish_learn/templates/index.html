@@ -1,0 +1,15 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="card text-center p-4">
+    <h1 class="text-primary mb-2">🇫🇮 Suomi Sanasto 🇫🇮</h1>
+    <p class="text-info">Loaded <b>{{ vocab_count }}</b> words from <b>dictionary.csv</b> </p>
+
+    <div class="d-grid gap-3 mt-4">
+        <a href="/learn" class="btn btn-outline-primary btn-lg">📚 Learn Mode</a>
+        <a href="/flashcard" class="btn btn-outline-primary btn-lg">📑 Flashcard Mode</a>
+        <a href="/quiz/mc" class="btn btn-outline-primary btn-lg">✅ Multiple Choice Quiz</a>
+        <a href="/quiz/typing" class="btn btn-outline-primary btn-lg">⌨ Typing Quiz</a>
+        <a href="/stats" class="btn btn-outline-success btn-lg">📊 View Stats</a>
+    </div>
+</div>
+{% endblock %}

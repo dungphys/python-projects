@@ -1,0 +1,60 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="card p-5">
+    <h2 class="text-primary text-center mb-4">Typing Quiz</h2>
+    <div class="alert alert-secondary text-center fs-5" id="typingDef"></div>
+
+    <input type="text" id="typingInput" class="form-control form-control-lg text-center"
+        placeholder="Type the word here..." autocomplete="off">
+    <button class="btn btn-primary w-100 mt-3" id="submitBtn" onclick="checkTyping()">Submit</button>
+
+    <div id="feedback" class="mt-4 text-center fs-5 fw-bold"></div>
+</div>
+
+<script>
+    const vocab = {{ vocab | tojson }};
+    let currentWord, startTime;
+
+    document.getElementById('typingInput').addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') checkTyping();
+    });
+
+    function nextQuestion() {
+        document.getElementById('feedback').innerText = "";
+        document.getElementById('typingInput').value = "";
+        document.getElementById('typingInput').disabled = false;
+        document.getElementById('submitBtn').disabled = false;
+        document.getElementById('typingInput').focus();
+
+        currentWord = vocab[Math.floor(Math.random() * vocab.length)];
+        document.getElementById('typingDef').innerText = currentWord.definition;
+        startTime = performance.now();
+    }
+
+    function checkTyping() {
+        let input = document.getElementById('typingInput');
+        let answer = input.value.trim();
+        if (!answer) return;
+
+        let timeTaken = (performance.now() - startTime) / 1000;
+        let isCorrect = answer.toLowerCase() === currentWord.word.toLowerCase();
+
+        input.disabled = true;
+        document.getElementById('submitBtn').disabled = true;
+
+        const fb = document.getElementById('feedback');
+        if (isCorrect) {
+            fb.innerHTML = `<span class="text-success">✅ Correct! (${timeTaken.toFixed(2)}s)</span>`;
+        } else {
+            fb.innerHTML = `<span class="text-danger">❌ Incorrect. The word was: <strong>${currentWord.word}</strong></span>`;
+        }
+
+        fetch('/api/stats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ word: currentWord.word, correct: isCorrect, time: timeTaken })
+        }).then(() => setTimeout(nextQuestion, 2000));
+    }
+    nextQuestion();
+</script>
+{% endblock %}

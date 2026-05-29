@@ -1,0 +1,62 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="card p-5">
+    <h2 class="text-primary text-center mb-4">Multiple Choice</h2>
+    <h3 id="mcWord" class="text-center mb-4"></h3>
+    <div id="optionsContainer" class="d-grid gap-2"></div>
+    <div id="feedback" class="mt-4 text-center fs-5 fw-bold"></div>
+</div>
+
+<script>
+    const vocab = {{ vocab | tojson }};
+    let currentWord, startTime;
+
+    function nextQuestion() {
+        document.getElementById('feedback').innerText = "";
+        currentWord = vocab[Math.floor(Math.random() * vocab.length)];
+
+        let options = [currentWord];
+        while (options.length < 4) {
+            let randomItem = vocab[Math.floor(Math.random() * vocab.length)];
+            if (!options.includes(randomItem)) options.push(randomItem);
+        }
+        options.sort(() => Math.random() - 0.5);
+
+        document.getElementById('mcWord').innerText = currentWord.word;
+        const container = document.getElementById('optionsContainer');
+        container.innerHTML = "";
+
+        options.forEach(opt => {
+            let btn = document.createElement('button');
+            btn.className = "btn btn-outline-secondary text-start";
+            btn.innerText = opt.definition;
+            btn.onclick = () => checkAnswer(opt, btn);
+            container.appendChild(btn);
+        });
+        startTime = performance.now();
+    }
+
+    function checkAnswer(selectedOpt, btnClicked) {
+        let timeTaken = (performance.now() - startTime) / 1000;
+        let isCorrect = selectedOpt.word === currentWord.word;
+
+        document.querySelectorAll('#optionsContainer button').forEach(b => b.disabled = true);
+
+        const fb = document.getElementById('feedback');
+        if (isCorrect) {
+            btnClicked.classList.replace('btn-outline-secondary', 'btn-success');
+            fb.innerHTML = `<span class="text-success">✅ Correct! (${timeTaken.toFixed(2)}s)</span>`;
+        } else {
+            btnClicked.classList.replace('btn-outline-secondary', 'btn-danger');
+            fb.innerHTML = `<span class="text-danger">❌ Incorrect. Correct answer: ${currentWord.definition}</span>`;
+        }
+
+        fetch('/api/stats', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ word: currentWord.word, correct: isCorrect, time: timeTaken })
+        }).then(() => setTimeout(nextQuestion, 2000));
+    }
+    nextQuestion();
+</script>
+{% endblock %}

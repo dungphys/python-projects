@@ -1,0 +1,32 @@
+{% extends 'layout.html' %}
+{% block content %}
+<div class="card text-center p-2">
+    <h2 class="mb-4 text-primary">Flashcard Mode</h2>
+    <div class="card bg-primary text-white p-6 mb-4" id="flashcard"
+        style="cursor:pointer; min-height: 250px; display:flex; align-items:center; justify-content:center;"
+        onclick="flipCard()">
+        <h2 id="cardText"></h2>
+    </div>
+    <button class="btn btn-outline-primary w-100" onclick="nextCard()">Next Card</button>
+</div>
+
+<script>
+    const vocab = {{ vocab | tojson }}.sort(() => Math.random() - 0.5);
+    let index = 0;
+    let isFlipped = false;
+
+    function renderCard() {
+        if (index >= vocab.length) return window.location.href = '/';
+        isFlipped = false;
+        document.getElementById('cardText').innerText = vocab[index].word;
+    }
+
+    function flipCard() {
+        document.getElementById('cardText').innerText = isFlipped ? vocab[index].word : vocab[index].definition;
+        isFlipped = !isFlipped;
+    }
+
+    function nextCard() { index++; renderCard(); }
+    renderCard();
+</script>
+{% endblock %}
