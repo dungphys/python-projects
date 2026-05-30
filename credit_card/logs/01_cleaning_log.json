@@ -1,0 +1,267 @@
+{
+  "run_at": "2026-05-30T14:09:49.594802Z",
+  "input_path": "data/credit_card_churn.csv",
+  "output_path": "data/cleaned_data.csv",
+  "steps": [
+    {
+      "step": "load",
+      "detail": "Read 10,127 rows x 23 cols from data/credit_card_churn.csv",
+      "rows_affected": 0
+    },
+    {
+      "step": "force_drop",
+      "detail": "Dropped 3 column(s)",
+      "rows_affected": 0,
+      "cols_affected": [
+        "CLIENTNUM",
+        "Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_1",
+        "Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_2"
+      ]
+    },
+    {
+      "step": "col_normalization",
+      "detail": "Normalized 20 columns",
+      "rows_affected": 0,
+      "cols_affected": [
+        "Attrition_Flag",
+        "Customer_Age",
+        "Gender",
+        "Dependent_count",
+        "Education_Level",
+        "Marital_Status",
+        "Income_Category",
+        "Card_Category",
+        "Months_on_book",
+        "Total_Relationship_Count",
+        "Months_Inactive_12_mon",
+        "Contacts_Count_12_mon",
+        "Credit_Limit",
+        "Total_Revolving_Bal",
+        "Avg_Open_To_Buy",
+        "Total_Amt_Chng_Q4_Q1",
+        "Total_Trans_Amt",
+        "Total_Trans_Ct",
+        "Total_Ct_Chng_Q4_Q1",
+        "Avg_Utilization_Ratio"
+      ]
+    },
+    {
+      "step": "drop_duplicates",
+      "detail": "No duplicate rows found",
+      "rows_affected": 0
+    },
+    {
+      "step": "drop_constant_cols",
+      "detail": "No constant columns found",
+      "rows_affected": 0
+    },
+    {
+      "step": "null_values",
+      "detail": "No true nulls found in any column",
+      "rows_affected": 0
+    },
+    {
+      "step": "sentinel_values",
+      "detail": "Sentinel values: {'education_level': {'count': 1519, 'rate': 0.15}, 'marital_status': {'count': 749, 'rate': 0.074}, 'income_category': {'count': 1112, 'rate': 0.1098}}",
+      "rows_affected": 0
+    },
+    {
+      "step": "string_normalise",
+      "detail": "Stripped whitespace on 6 string column(s)",
+      "rows_affected": 0,
+      "cols_affected": [
+        "attrition_flag",
+        "gender",
+        "education_level",
+        "marital_status",
+        "income_category",
+        "card_category"
+      ]
+    },
+    {
+      "step": "outlier_flag",
+      "detail": "customer_age: 2 outliers (0.02%) outside [24.5, 68.5]",
+      "rows_affected": 0
+    },
+    {
+      "step": "outlier_flag",
+      "detail": "months_on_book: 386 outliers (3.81%) outside [17.5, 53.5]",
+      "rows_affected": 0
+    },
+    {
+      "step": "outlier_flag",
+      "detail": "months_inactive_12_mon: 331 outliers (3.27%) outside [0.5, 4.5]",
+      "rows_affected": 0
+    },
+    {
+      "step": "outlier_flag",
+      "detail": "contacts_count_12_mon: 629 outliers (6.21%) outside [0.5, 4.5]",
+      "rows_affected": 0
+    },
+    {
+      "step": "outlier_flag",
+      "detail": "credit_limit: 984 outliers (9.72%) outside [-10213.75, 23836.25]",
+      "rows_affected": 0
+    },
+    {
+      "step": "outlier_flag",
+      "detail": "avg_open_to_buy: 963 outliers (9.51%) outside [-11477.25, 22660.75]",
+      "rows_affected": 0
+    },
+    {
+      "step": "outlier_flag",
+      "detail": "total_amt_chng_q4_q1: 396 outliers (3.91%) outside [0.289, 1.201]",
+      "rows_affected": 0
+    },
+    {
+      "step": "outlier_flag",
+      "detail": "total_trans_amt: 896 outliers (8.85%) outside [-1722.75, 8619.25]",
+      "rows_affected": 0
+    },
+    {
+      "step": "outlier_flag",
+      "detail": "total_trans_ct: 2 outliers (0.02%) outside [-9.0, 135.0]",
+      "rows_affected": 0
+    },
+    {
+      "step": "outlier_flag",
+      "detail": "total_ct_chng_q4_q1: 394 outliers (3.89%) outside [0.228, 1.172]",
+      "rows_affected": 0
+    }
+  ],
+  "input_shape": [
+    10127,
+    23
+  ],
+  "input_dtypes": {
+    "CLIENTNUM": "int64",
+    "Attrition_Flag": "object",
+    "Customer_Age": "int64",
+    "Gender": "object",
+    "Dependent_count": "int64",
+    "Education_Level": "object",
+    "Marital_Status": "object",
+    "Income_Category": "object",
+    "Card_Category": "object",
+    "Months_on_book": "int64",
+    "Total_Relationship_Count": "int64",
+    "Months_Inactive_12_mon": "int64",
+    "Contacts_Count_12_mon": "int64",
+    "Credit_Limit": "float64",
+    "Total_Revolving_Bal": "int64",
+    "Avg_Open_To_Buy": "float64",
+    "Total_Amt_Chng_Q4_Q1": "float64",
+    "Total_Trans_Amt": "int64",
+    "Total_Trans_Ct": "int64",
+    "Total_Ct_Chng_Q4_Q1": "float64",
+    "Avg_Utilization_Ratio": "float64",
+    "Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_1": "float64",
+    "Naive_Bayes_Classifier_Attrition_Flag_Card_Category_Contacts_Count_12_mon_Dependent_count_Education_Level_Months_Inactive_12_mon_2": "float64"
+  },
+  "outlier_report": {
+    "customer_age": {
+      "n_outliers": 2,
+      "pct": 0.02,
+      "lower_fence": 24.5,
+      "upper_fence": 68.5,
+      "min": 26.0,
+      "max": 73.0
+    },
+    "months_on_book": {
+      "n_outliers": 386,
+      "pct": 3.81,
+      "lower_fence": 17.5,
+      "upper_fence": 53.5,
+      "min": 13.0,
+      "max": 56.0
+    },
+    "months_inactive_12_mon": {
+      "n_outliers": 331,
+      "pct": 3.27,
+      "lower_fence": 0.5,
+      "upper_fence": 4.5,
+      "min": 0.0,
+      "max": 6.0
+    },
+    "contacts_count_12_mon": {
+      "n_outliers": 629,
+      "pct": 6.21,
+      "lower_fence": 0.5,
+      "upper_fence": 4.5,
+      "min": 0.0,
+      "max": 6.0
+    },
+    "credit_limit": {
+      "n_outliers": 984,
+      "pct": 9.72,
+      "lower_fence": -10213.75,
+      "upper_fence": 23836.25,
+      "min": 1438.3,
+      "max": 34516.0
+    },
+    "avg_open_to_buy": {
+      "n_outliers": 963,
+      "pct": 9.51,
+      "lower_fence": -11477.25,
+      "upper_fence": 22660.75,
+      "min": 3.0,
+      "max": 34516.0
+    },
+    "total_amt_chng_q4_q1": {
+      "n_outliers": 396,
+      "pct": 3.91,
+      "lower_fence": 0.289,
+      "upper_fence": 1.201,
+      "min": 0.0,
+      "max": 3.397
+    },
+    "total_trans_amt": {
+      "n_outliers": 896,
+      "pct": 8.85,
+      "lower_fence": -1722.75,
+      "upper_fence": 8619.25,
+      "min": 510.0,
+      "max": 18484.0
+    },
+    "total_trans_ct": {
+      "n_outliers": 2,
+      "pct": 0.02,
+      "lower_fence": -9.0,
+      "upper_fence": 135.0,
+      "min": 10.0,
+      "max": 139.0
+    },
+    "total_ct_chng_q4_q1": {
+      "n_outliers": 394,
+      "pct": 3.89,
+      "lower_fence": 0.228,
+      "upper_fence": 1.172,
+      "min": 0.0,
+      "max": 3.714
+    }
+  },
+  "rows_removed": 0,
+  "cols_removed": 3,
+  "output_dtypes": {
+    "attrition_flag": "object",
+    "customer_age": "int64",
+    "gender": "object",
+    "dependent_count": "int64",
+    "education_level": "object",
+    "marital_status": "object",
+    "income_category": "object",
+    "card_category": "object",
+    "months_on_book": "int64",
+    "total_relationship_count": "int64",
+    "months_inactive_12_mon": "int64",
+    "contacts_count_12_mon": "int64",
+    "credit_limit": "float64",
+    "total_revolving_bal": "int64",
+    "avg_open_to_buy": "float64",
+    "total_amt_chng_q4_q1": "float64",
+    "total_trans_amt": "int64",
+    "total_trans_ct": "int64",
+    "total_ct_chng_q4_q1": "float64",
+    "avg_utilization_ratio": "float64"
+  }
+}
