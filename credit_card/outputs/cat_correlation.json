@@ -1,0 +1,37 @@
+{
+  "gender": {
+    "chi2": 13.86561370063734,
+    "p": 0.00019635846717310307,
+    "cramers_v": 0.03700233606891411,
+    "rates": "gender\nF    17.357223\nM    14.615223\nName: Churned, dtype: float64",
+    "sig": "***"
+  },
+  "education_level": {
+    "chi2": 12.511205404830507,
+    "p": 0.05148913147336634,
+    "cramers_v": 0.035148692325830684,
+    "rates": "education_level\nDoctorate        21.064302\nPost-Graduate    17.829457\nUnknown          16.853193\nUneducated       15.938130\nGraduate         15.569054\nCollege          15.202369\nHigh School      15.201192\nName: Churned, dtype: float64",
+    "sig": "ns"
+  },
+  "marital_status": {
+    "chi2": 6.056097396726619,
+    "p": 0.10891263394840227,
+    "cramers_v": 0.024454344190962755,
+    "rates": "marital_status\nUnknown     17.222964\nSingle      16.941415\nDivorced    16.176471\nMarried     15.126947\nName: Churned, dtype: float64",
+    "sig": "ns"
+  },
+  "income_category": {
+    "chi2": 12.832259274756895,
+    "p": 0.025002425704390617,
+    "cramers_v": 0.03559681634826646,
+    "rates": "income_category\n$120K +           17.331499\nLess than $40K    17.186184\nUnknown           16.816547\n$80K - $120K      15.765472\n$40K - $60K       15.139665\n$60K - $80K       13.480742\nName: Churned, dtype: float64",
+    "sig": "*"
+  },
+  "card_category": {
+    "chi2": 2.2342267000046805,
+    "p": 0.5252382797994759,
+    "cramers_v": 0.014853308924884009,
+    "rates": "card_category\nPlatinum    25.000000\nGold        18.103448\nBlue        16.097923\nSilver      14.774775\nName: Churned, dtype: float64",
+    "sig": "ns"
+  }
+}

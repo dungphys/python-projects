@@ -13,12 +13,11 @@ Data Cleaning Procedure:
 """
 import numpy as np
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import warnings, os, json, re 
 
 # - Set up
 warnings.filterwarnings("ignore")
-os.makedirs("outputs/", exist_ok=True)
 os.makedirs("logs/", exist_ok=True)
 
 INPUT = "data/credit_card_churn.csv"
@@ -32,7 +31,7 @@ SENTINEL_VALUES = {
 }
 # - Audit log
 log = {
-    "run_at":       datetime.utcnow().isoformat() + "Z",
+    "run_at":       datetime.now(timezone(timedelta(hours=3))).strftime("%Y-%m-%d %H:%M:%S %Z"),
     "input_path":   INPUT,
     "output_path":  OUTPUT,
     "steps":        [],
@@ -281,9 +280,11 @@ if __name__ == "__main__":
     detect_outliers(df)
     # 10 - finalization
     final_shape     = df.shape
-    log["rows_removed"]          = orig_shape[0] - final_shape[0]
-    log["cols_removed"]          = orig_shape[1] - final_shape[1]
-    log["output_dtypes"]         = df.dtypes.astype(str).to_dict()
+    log["original_shape"]    = orig_shape
+    log["final_shape"]       = final_shape    
+    log["rows_removed"]      = orig_shape[0] - final_shape[0]
+    log["cols_removed"]      = orig_shape[1] - final_shape[1]
+    log["output_dtypes"]     = df.dtypes.astype(str).to_dict()
 
     df.to_csv(OUTPUT, index=False)
  

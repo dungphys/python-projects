@@ -1,0 +1,38 @@
+{
+  "attrition_flag": {
+    "count": 10127,
+    "unique": 2,
+    "top": "Existing Customer",
+    "freq": 8500
+  },
+  "gender": {
+    "count": 10127,
+    "unique": 2,
+    "top": "F",
+    "freq": 5358
+  },
+  "education_level": {
+    "count": 10127,
+    "unique": 7,
+    "top": "Graduate",
+    "freq": 3128
+  },
+  "marital_status": {
+    "count": 10127,
+    "unique": 4,
+    "top": "Married",
+    "freq": 4687
+  },
+  "income_category": {
+    "count": 10127,
+    "unique": 6,
+    "top": "Less than $40K",
+    "freq": 3561
+  },
+  "card_category": {
+    "count": 10127,
+    "unique": 4,
+    "top": "Blue",
+    "freq": 9436
+  }
+}
