@@ -10,6 +10,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib.ticker as mtick
+import matplotlib.cm as cm
 import seaborn as sns
 import warnings, os, json
 from datetime import datetime, timezone, timedelta
@@ -29,10 +30,10 @@ DORANGE   = "#9B4A03"
 GREEN    = "#17EB10"
 LBLUE    = "#0497AA"
 BLUE     = "#2563EB"
-PURPLE   = "#EC4899"
+PURPLE   = "#B906DD"
 GRAY     = "#64748B"
 LIGHT    = "#F1F5F9"
-PALETTE  = [RED, ORANGE, GREEN, LBLUE, BLUE, PURPLE, GRAY, LIGHT]
+PALETTE  = [RED, ORANGE, DORANGE, GREEN, LBLUE, BLUE, PURPLE, GRAY, LIGHT]
 
 plt.rcParams.update({
     "figure.facecolor" : "white",
@@ -44,8 +45,8 @@ plt.rcParams.update({
     "grid.color"       : "white",
     "grid.linewidth"   : 0.3,
     "font.family"      : "sans-serif",
-    "axes.titlesize"   : 13,
-    "axes.labelsize"   : 11,
+    "axes.titlesize"   : 14,
+    "axes.labelsize"   : 12,
 })
 
 # - Audit log
@@ -103,6 +104,58 @@ def get_basic_statistics(df: pd.DataFrame) -> list[dict]:
     )
     return cat_stat_report, num_stat_report
 
+# ------------------------------------------------------------------
+# STEP 3 — ANALYSIS 2: NUMERICAL DISTRIBUTION
+# ------------------------------------------------------------------
+def plot_numeric_distribution(df, cols=None):
+    if cols is None:
+        cols = df.select_dtypes(include=['number']).columns
+    ncol = 3
+    nrow = math.ceil(len(cols) / ncol)
+    fig, axes = plt.subplots(nrow, ncol, figsize=(15, 5*nrow))
+    fig.suptitle("NUMERICAL DISTRIBUTION", 
+                 fontsize=16, fontweight="bold", 
+                 y=1.01, color=DORANGE)
+    axes = axes.flatten()
+    for i, col in enumerate(cols):
+        sns.histplot(data=df, x=col, kde=True, ax=axes[i])
+        axes[i].set_title(f'Distribution of {col}')
+        # Get the patches (bars) from the plot
+        patches = [patch for patch in axes[i].patches if isinstance(patch, plt.matplotlib.patches.Rectangle)]
+
+        # Apply gradient colormap
+        cmap = cm.get_cmap('Spectral')
+        norm = plt.Normalize(vmin=0, vmax=len(patches))
+
+        for i, patch in enumerate(patches):
+            patch.set_facecolor(cmap(norm(i)))
+    plt.tight_layout()
+    plt.savefig("outputs/01_eda_num_distrib.png", dpi=150, bbox_inches="tight")
+    plt.show()
+
+# ------------------------------------------------------------------
+# STEP 4 — ANALYSIS 3: CATEGORICAL DISTRIBUTION
+# ------------------------------------------------------------------
+def plot_categorical_counts(df, cols=None):
+    if cols is None:
+        cols = df.select_dtypes(include=['object', 'category']).columns
+    ncol = 3
+    nrow = math.ceil(len(cols) / ncol)
+    fig, axes = plt.subplots(nrow, ncol, figsize=(15, 5*nrow))
+    fig.suptitle("CATEGORICAL DISTRIBUTION", 
+                 fontsize=16, fontweight="bold", 
+                 y=1.01, color=DORANGE)
+    axes = axes.flatten()
+    for i, col in enumerate(cols):
+        sns.countplot(data=df, x=col,
+                      order = df[col].value_counts().index, 
+                      ax=axes[i], palette=PALETTE)
+        axes[i].set_title(f'Count of {col}', fontweight="bold", fontsize=14)
+        axes[i].tick_params(axis='x', rotation=45)
+    plt.tight_layout()
+    plt.savefig("outputs/02_eda_cat_distrib.png", dpi=150, bbox_inches="tight")
+    plt.show()
+    
 # ------------------------------------------------------------------
 # STEP 3 — ANALYSIS 2: CHURN ANALYSIS BY CATEGORY
 # ------------------------------------------------------------------
@@ -325,7 +378,7 @@ def churn_by_interaction(
     target_col: str 
 ) -> None:
     print("=" * 65)
-    print("STEP 4 : Churn by numerical variables")
+    print("STEP 5 : Churn by interaction variables")
     print("=" * 65)
 
     df["Churned"] = (df[target_col] == "Attrited Customer").astype(int)
@@ -432,9 +485,12 @@ if __name__ == "__main__":
     with open("outputs/num_stats.json", "w") as f:
         json.dump(num_stats, f, indent=2, default=str)
     # 03 - churn by categorical variables
-    churn_by_cat(df, "attrition_flag")
+    plot_numeric_distribution(df, cols=None)
+    plot_categorical_counts(df, cols=None)
+
+    #churn_by_cat(df, "attrition_flag")
     # 04 - churn by numerical variables
-    churn_by_num(df, "attrition_flag")
-    churn_by_interaction(df, "attrition_flag")
+    #churn_by_num(df, "attrition_flag")
+    #churn_by_interaction(df, "attrition_flag")
 
     print("\nChurn EDA completed!\n")
