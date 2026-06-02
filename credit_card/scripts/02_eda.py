@@ -15,6 +15,7 @@ import seaborn as sns
 import warnings, os, json
 from datetime import datetime, timezone, timedelta
 from scipy import stats
+from pathlib import Path
 
 
 # ─ Set up 
@@ -67,14 +68,33 @@ def record(step, detail):
     print(f" {tag:<30} {detail}")
 
 
+def _resolve_input_path() -> Path:
+    base_dir = Path(__file__).resolve().parent
+    print(base_dir)
+    candidates = [
+        base_dir / "cleaned_data.csv",
+        base_dir.parent / "cleaned_data.csv",
+        base_dir / "data" / "cleaned_data.csv",
+        base_dir.parent / "data" / "cleaned_data.csv",
+        Path("cleaned_data.csv"),
+    ]
+    for candidate in candidates:
+        if candidate.exists():
+            return candidate
+    raise FileNotFoundError(
+        "Could not find cleaned_data.csv in the current project structure. "
+        "Place the file in the data directory."
+    )
+
 # ------------------------------------------------------------------
 # STEP 1 — LOAD AND SNAPSHOT
 # ------------------------------------------------------------------
-def load_data(file_path: str) -> pd.DataFrame:
+def load_data() -> pd.DataFrame:
     print("=" * 65)
     print("STEP 1 : Load and Snapshot")
     print("=" * 65)
 
+    file_path = _resolve_input_path()
     df = pd.read_csv(file_path)
     orig_shape = df.shape
     record("load", 
