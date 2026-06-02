@@ -108,6 +108,9 @@ def get_basic_statistics(df: pd.DataFrame) -> list[dict]:
 # STEP 3 — ANALYSIS 2: NUMERICAL DISTRIBUTION
 # ------------------------------------------------------------------
 def plot_numeric_distribution(df, cols=None):
+    print("=" * 65)
+    print("STEP 3 : Numerical Distribution")
+    print("=" * 65)
     if cols is None:
         cols = df.select_dtypes(include=['number']).columns
     ncol = 3
@@ -131,12 +134,16 @@ def plot_numeric_distribution(df, cols=None):
             patch.set_facecolor(cmap(norm(i)))
     plt.tight_layout()
     plt.savefig("outputs/01_eda_num_distrib.png", dpi=150, bbox_inches="tight")
+    print("\n✔ Saved: outputs/01_eda_num_distrib.png")
     plt.show()
 
 # ------------------------------------------------------------------
 # STEP 4 — ANALYSIS 3: CATEGORICAL DISTRIBUTION
 # ------------------------------------------------------------------
 def plot_categorical_counts(df, cols=None):
+    print("=" * 65)
+    print("STEP 4 : Categorical distribution")
+    print("=" * 65)
     if cols is None:
         cols = df.select_dtypes(include=['object', 'category']).columns
     ncol = 3
@@ -154,17 +161,18 @@ def plot_categorical_counts(df, cols=None):
         axes[i].tick_params(axis='x', rotation=45)
     plt.tight_layout()
     plt.savefig("outputs/02_eda_cat_distrib.png", dpi=150, bbox_inches="tight")
+    print("\n✔ Saved: outputs/02_eda_cat_distrib.png")
     plt.show()
     
 # ------------------------------------------------------------------
-# STEP 3 — ANALYSIS 2: CHURN ANALYSIS BY CATEGORY
+# STEP 5 — ANALYSIS 4: CHURN ANALYSIS BY CATEGORY
 # ------------------------------------------------------------------
 def churn_by_cat(
     df: pd.DataFrame,
     target_col: str
 ) -> None:
     print("=" * 65)
-    print("STEP 3 : Churn by categorical variables")
+    print("STEP 5 : Churn by categorical variables")
     print("=" * 65)
 
     print(f"Rows: {len(df):,}  |  Columns: {df.shape[1]}")
@@ -197,9 +205,9 @@ def churn_by_cat(
         axes[i+1].set_title(f"Churn by {col}", fontweight="bold")
         axes[i+1].tick_params(axis="x", rotation=30)
     plt.tight_layout()
-    plt.savefig("outputs/01_eda_churn_by_cat.png", dpi=150, bbox_inches="tight")
+    plt.savefig("outputs/03_eda_churn_by_cat.png", dpi=150, bbox_inches="tight")
     plt.close()
-    print("\n✔ Saved: outputs/01_eda_churn_by_cat.png")
+    print("\n✔ Saved: outputs/03_eda_churn_by_cat.png")
 
     # ─ Cat correlation:
     df["Churned"] = (df["attrition_flag"] == "Attrited Customer").astype(int)    
@@ -222,6 +230,7 @@ def churn_by_cat(
             print(f"    {cat:<25} {rate:.1f}%{marker}")
         with open("outputs/cat_correlation.json", "w") as f:
             json.dump(cat_results, f, indent=2, default=str)
+            print("Cat.correlation results saved to outputs/cat_correlation.json")
     
     # ─ Figure 1b:
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
@@ -256,19 +265,19 @@ def churn_by_cat(
                 f"{rate:.1f}%", ha="center", fontsize=8, fontweight="bold")
  
     plt.tight_layout()
-    plt.savefig("outputs/01_categorical_churn_rates.png", dpi=150, bbox_inches="tight")
+    plt.savefig("outputs/04_categorical_churn_rates.png", dpi=150, bbox_inches="tight")
     plt.close()
-    print("\n✔ Saved: outputs/01_categorical_churn_rates.png")
+    print("\n✔ Saved: outputs/04_categorical_churn_rates.png")
 
 # ------------------------------------------------------------------
-# STEP 4 — ANALYSIS 3: CHURN ANALYSIS BY NUMERICAL VARIABLES
+# STEP 6 — ANALYSIS 5: CHURN ANALYSIS BY NUMERICAL VARIABLES
 # ------------------------------------------------------------------
 def churn_by_num(
     df: pd.DataFrame, 
     target_col: str 
 ) -> None:
     print("=" * 65)
-    print("STEP 4 : Churn by numerical variables")
+    print("STEP 6 : Churn by numerical variables")
     print("=" * 65)
     num_cols = df.select_dtypes(include='number').columns.tolist()
     num_cols.remove("Churned")
@@ -313,9 +322,9 @@ def churn_by_num(
     grn_p  = mpatches.Patch(color=GREEN, label="Positive r  (higher → more churn)")
     ax.legend(handles=[red_p, grn_p], loc="lower right", fontsize=9)
     plt.tight_layout()
-    plt.savefig("outputs/02_eda_correlation_waterfall.png", dpi=150, bbox_inches="tight")
+    plt.savefig("outputs/05_eda_correlation_waterfall.png", dpi=150, bbox_inches="tight")
     plt.close()
-    print("\n✔ Saved: outputs/02_eda_correlation_waterfall.png")
+    print("\n✔ Saved: outputs/05_eda_correlation_waterfall.png")
 
     # - Figure 2b:
     TOP9 = res_df.head(9)["feature"].tolist()
@@ -338,9 +347,9 @@ def churn_by_num(
         ax.set_xlabel(f"Median Δ = {pct:+.1f}%", fontsize=10, labelpad=2)
  
     plt.tight_layout()
-    plt.savefig("outputs/02_eda_boxplots_top9.png", dpi=150, bbox_inches="tight")
+    plt.savefig("outputs/06_eda_boxplots_top9.png", dpi=150, bbox_inches="tight")
     plt.close()
-    print("✔ Saved: outputs/02_eda_boxplots_top9.png")
+    print("✔ Saved: outputs/06_eda_boxplots_top9.png")
 
     # ─ Figure 2c:
     corr = df[num_cols].corr()
@@ -351,9 +360,9 @@ def churn_by_num(
             cbar_kws={"shrink":0.8}, ax=ax, annot_kws={"size":8})
     ax.set_title("Feature Correlation Matrix", fontsize=14, fontweight="bold", pad=15)
     plt.tight_layout()
-    plt.savefig("outputs/02_eda_correlation_heatmap.png", dpi=150, bbox_inches="tight")
+    plt.savefig("outputs/07_eda_correlation_heatmap.png", dpi=150, bbox_inches="tight")
     plt.close()
-    print("✔ Saved: outputs/02_eda_correlation_heatmap.png")
+    print("✔ Saved: outputs/07_eda_correlation_heatmap.png")
 
     # ─ Figure 2d:
     n_plots = len(num_cols)
@@ -366,110 +375,10 @@ def churn_by_num(
         sns.histplot(data=df, x=col, hue=target_col, ax=axes[i], color=[LBLUE,ORANGE])
     axes[-1].axis("off")
     plt.tight_layout()
-    plt.savefig("outputs/02_eda_churn_by_num_hist.png", dpi=150, bbox_inches="tight")
+    plt.savefig("outputs/08_eda_churn_by_num_hist.png", dpi=150, bbox_inches="tight")
     plt.close()
-    print("✔ Saved: outputs/02_eda_churn_by_num_hist.png")
+    print("✔ Saved: outputs/08_eda_churn_by_num_hist.png")
 
-# ------------------------------------------------------------------
-# STEP 5 — ANALYSIS 4: CHURN ANALYSIS BY INTERACTION
-# ------------------------------------------------------------------
-def churn_by_interaction(
-    df: pd.DataFrame, 
-    target_col: str 
-) -> None:
-    print("=" * 65)
-    print("STEP 5 : Churn by interaction variables")
-    print("=" * 65)
-
-    df["Churned"] = (df[target_col] == "Attrited Customer").astype(int)
-    BASELINE = df["Churned"].mean() * 100
-
-    def helper_pivot_churn(df, c1, c2, q=3):
-        labels = ["Low", "Mid", "High"][:q]
-        df[f"_q1"] = pd.qcut(df[c1], q=q, labels=labels, duplicates="drop")
-        df[f"_q2"] = pd.qcut(df[c2], q=q, labels=labels, duplicates="drop")
-        piv = (df.groupby(["_q1","_q2"], observed=True)["Churned"]
-                .mean().mul(100).unstack())
-        df.drop(columns=["_q1","_q2"], inplace=True)
-        return piv
-    def helper_pivot_cat_num(df, cat_col, num_col, order=None, q=3):
-        labels = ["Low", "Mid", "High"][:q]
-        df["_q"] = pd.qcut(df[num_col], q=q, labels=labels, duplicates="drop")
-        piv = (df.groupby([cat_col,"_q"], observed=True)["Churned"]
-                .mean().mul(100).unstack())
-        df.drop(columns=["_q"], inplace=True)
-        if order:
-            piv = piv.reindex([o for o in order if o in piv.index])
-        return piv
-    def helper_pivot_cat_cat(df, cat_1, cat_2, order=None):
-        piv = (df.groupby([cat_1, cat_2], observed=True)["Churned"]
-                .mean().mul(100).unstack())
-        if order:
-            piv = piv.reindex([o for o in order if o in piv.index])
-        return piv
-    
-    # ─ Figure A: 2×2 numeric interaction heatmaps
-    fig, axes = plt.subplots(2, 2, figsize=(14, 11))
-    fig.suptitle("Bivariate Interaction — Churn Rate Heatmaps",
-             fontsize=14, fontweight="bold")
- 
-    pairs = [
-        ("total_trans_ct",      "total_trans_amt",
-         "transaction count",   "transaction amount"),
-        ("total_trans_ct",      "months_inactive_12_mon",
-         "transaction count",   "months inactive"),
-        ("avg_utilization_ratio","total_revolving_bal",
-         "utilisation ratio",   "revolving balance"),
-        ("total_ct_chng_q4_q1", "contacts_count_12_mon",
-         "txn count change q4/q1","contacts (12m)"),
-    ]
- 
-    for ax, (c1, c2, l1, l2) in zip(axes.flatten(), pairs):
-        piv = helper_pivot_churn(df, c1, c2)
-        sns.heatmap(piv, annot=True, fmt=".1f", cmap="RdYlGn_r",
-                vmin=0, vmax=60, linewidths=1.5, linecolor="white",
-                ax=ax, cbar_kws={"label": "Churn %", "shrink": 0.8},
-                annot_kws={"size": 11, "weight": "bold"})
-        ax.set_title(f"{l1}  ×  {l2}", fontsize=11, fontweight="bold", pad=10)
-        ax.set_xlabel(l2); ax.set_ylabel(l1)
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
-        ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
- 
-    plt.tight_layout()
-    plt.savefig("outputs/03_interaction_heatmaps.png", dpi=150, bbox_inches="tight")
-    plt.close()
-    print("✔ Saved: outputs/03_interaction_heatmaps.png")
-
-    # ── Figure B: categorical × numeric ──────────────────────────────────────────
-    fig, axes = plt.subplots(1, 2, figsize=(15, 6))
-    fig.suptitle("Categorical × Numeric Interaction — Churn Rate",
-             fontsize=13, fontweight="bold")
- 
-    income_order = ["Less than $40K","$40K - $60K","$60K - $80K",
-                "$80K - $120K","$120K +","Unknown"]
- 
-    pairs_cat = [
-        ("income_category", "avg_utilization_ratio",
-        income_order,       "Income Category", "Utilisation Ratio"),
-        ("card_category",   "total_trans_ct",
-        ["Blue","Silver","Gold","Platinum"], "Card Category", "Transaction Count"),
-    ]
- 
-    for ax, (cat, num, order, lcat, lnum) in zip(axes, pairs_cat):
-        piv = helper_pivot_cat_num(df, cat, num, order=order)
-        sns.heatmap(piv, annot=True, fmt=".1f", cmap="RdYlGn_r",
-                vmin=0, vmax=60, linewidths=1.5, linecolor="white",
-                ax=ax, cbar_kws={"label": "Churn %", "shrink": 0.8},
-                annot_kws={"size": 11, "weight": "bold"})
-        ax.set_title(f"{lcat}  ×  {lnum}", fontsize=11, fontweight="bold", pad=10)
-        ax.set_xlabel(lnum + " (tertile)"); ax.set_ylabel(lcat)
-        ax.set_xticklabels(["Low", "Mid", "High"], rotation=0)
-        ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
- 
-    plt.tight_layout()
-    plt.savefig("outputs/03_cat_num_interaction.png", dpi=150, bbox_inches="tight")
-    plt.close()
-    print("✔ Saved: outputs/03_cat_num_interaction.png")
 
 
 if __name__ == "__main__":
@@ -484,13 +393,13 @@ if __name__ == "__main__":
         json.dump(cat_stats, f, indent=2, default=str)
     with open("outputs/num_stats.json", "w") as f:
         json.dump(num_stats, f, indent=2, default=str)
-    # 03 - churn by categorical variables
+    # 03 - Univariate analysis: numerical distribution
     plot_numeric_distribution(df, cols=None)
+    # 04 - Univariate analysis: categorical distribution
     plot_categorical_counts(df, cols=None)
-
-    #churn_by_cat(df, "attrition_flag")
-    # 04 - churn by numerical variables
-    #churn_by_num(df, "attrition_flag")
-    #churn_by_interaction(df, "attrition_flag")
+    # 05 - churn by categorical variables
+    churn_by_cat(df, "attrition_flag")
+    # 06 - churn by numerical variables
+    churn_by_num(df, "attrition_flag")
 
     print("\nChurn EDA completed!\n")
