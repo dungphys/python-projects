@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+
+  # ── PostgreSQL (MLflow backend) ─────────────────────────
+  postgres:
+    image: postgres:15-alpine
+    env_file: .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ── MLflow Tracking Server ──────────────────────────────
+  mlflow:
+    image: python:3.11-slim
+    command: >
+      bash -c "pip install mlflow psycopg2-binary -q &&
+               mlflow server
+               --backend-store-uri postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+               --default-artifact-root /mlflow/artifacts
+               --host 0.0.0.0
+               --port 5000"
+    ports:
+      - "5000:5000"
+    volumes:
+      - mlflow_artifacts:/mlflow/artifacts
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file: .env
+
+  # ── Model Trainer (runs once, then exits) ───────────────
+  trainer:
+    build: ./trainer
+    volumes:
+      - ./shared/models:/app/models # saves trained model here
+      - mlflow_artifacts:/mlflow/artifacts
+    env_file: .env
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+
+  # ── FastAPI Inference Server ────────────────────────────
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./shared/models:/app/models # reads model from here
+    env_file: .env
+    depends_on:
+      - trainer
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8000/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # ── Streamlit Dashboard ─────────────────────────────────
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "8501:8501"
+    environment:
+      - API_URL=http://api:8000
+    depends_on:
+      api:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  mlflow_artifacts:
