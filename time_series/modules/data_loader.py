@@ -81,7 +81,7 @@ def build_time_index(df: pd.DataFrame, date_col: str) -> pd.DataFrame:
     out.index.name = "date"
     return out, n_bad
 
-# frequency
+# frequency labelling
 FREQ_LABELS = {
     "D": "Daily",
     "B": "Business day",
