@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+.git/
+.gitignore
+.venv/
+venv/
+.streamlit/
+.DS_Store
+*.log
+data/
