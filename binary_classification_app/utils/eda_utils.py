@@ -17,7 +17,7 @@ def target_balance_fig(y: pd.Series, target_name: str) -> go.Figure:
         x=labels, y=counts.values, text=counts.values,
         labels={"x": target_name, "y": "Count"},
         title=f"Target Class Balance: {target_name}",
-        color=labels,
+        color=labels, color_discrete_sequence=px.colors.qualitative.D3
     )
     fig.update_traces(textposition="outside")
     return fig
@@ -77,7 +77,7 @@ def correlation_heatmap_fig(df: pd.DataFrame, numeric_cols: list[str]) -> go.Fig
         fig.add_annotation(text="Need at least 2 numeric columns for a correlation heatmap",
                             showarrow=False, font=dict(size=14))
         return fig
-    corr = df[numeric_cols].corr(numeric_only=True)
+    corr = df[numeric_cols].corr()
     fig = px.imshow(
         corr, text_auto=".2f", color_continuous_scale="RdBu_r", zmin=-1, zmax=1,
         title="Correlation Heatmap (numeric features)",
@@ -88,6 +88,7 @@ def correlation_heatmap_fig(df: pd.DataFrame, numeric_cols: list[str]) -> go.Fig
 
 def boxplot_fig(df: pd.DataFrame, col: str, y: pd.Series, target_name: str) -> go.Figure:
     plot_df = pd.DataFrame({col: df[col], target_name: y.astype(str)})
+    is_log_y = True if (plot_df[col] > 0).all() and (plot_df[col].max() / plot_df[col].min() > 100) else False
     fig = px.box(plot_df, x=target_name, y=col, color=target_name,
-                  title=f"{col} by {target_name}")
+                  title=f"{col} by {target_name}", log_y=is_log_y, color_discrete_sequence=px.colors.qualitative.D3)
     return fig
