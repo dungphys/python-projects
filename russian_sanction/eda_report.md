@@ -32,11 +32,12 @@
 
 ### 2.1 Distributions
 
-<img src="output/eda_sanctions_timeline.png" width="100%" height="160">
-<img src="output/eda_sanctions_density.png" width="100%" height="160">
-<img src="output/eda_sanctions_overview.png" width="100%" height="160">
-
-- Sanctions actions cluster heavily around Feb–Mar 2022 (14 actions in ~3 weeks) and remain frequent (2-3 months apart) through 2023–2026 — **event windows will overlap and must be clustered/de-contaminated**, not treated as 39+ independent shocks.
+<div style="text-align: center;">
+<img src="output/eda_sanctions_timeline.png" width="60%" height="60%">
+<img src="output/eda_sanctions_density.png" width="60%" height="60%">
+<img src="output/eda_sanctions_overview.png" width="60%" height="60%">
+</div>
+- Sanctions actions cluster heavily around Feb–Mar 2022 (14 actions in ~3 weeks; mega-cluster) and remain frequent (2-3 months apart) through 2023–2026 — **event windows will overlap and must be clustered/de-contaminated**, not treated as 39+ independent shocks.
 - Wave 1 (Crimea, 2014) was sparse and mostly individual/SDN listings and sectoral.
 - Wave 2 (full-scale invasion, 2022) compresses ~14 discrete actions into roughly three weeks — this clustering is the central econometric problem addressed in the event
 study. 
@@ -51,7 +52,7 @@ study.
 The daily `equity_index_daily` file tracks the response of market indices (MOEX, RUB, and rates) across three stress periods.
 
 <center>
-<img src="output/eda_markets.png" width="100%" height="80%">
+<img src="output/eda_markets.png" width="60%" height="60%">
 </center> 
 
 **MOEX:** Broadly trended from ~1500 in 2014 to >4000 by late 2021. The pre-halt close was 2,144; the reopening price on March 24 was 2,044 (−4.7% cumulative over the 18-day halt). The market has since recovered, and increases rapidly in 2023.
@@ -67,7 +68,7 @@ The daily `equity_index_daily` file tracks the response of market indices (MOEX,
 
 Note: Price-cap date is December 5, 2022, when the G7+EU $60/bbl cap on Russian seaborne crude took effect
 <center>
-<img src="output/eda_commodities.png" width="100%" height="60%">
+<img src="output/eda_commodities.png" width="60%" height="60%">
 </center>
 
 **Urals discount:** This is the single most direct barometer of sanctions effectiveness on the energy side, since it isolates the price Russia receives relative to the global benchmark.
@@ -85,7 +86,7 @@ The ESPO blend (Russia's Pacific export) carries a smaller discount because it s
 ## 5. Macro and fiscal context
 
 <center>
-<img src="output/eda_macro.png" width="95%" height="100%">
+<img src="output/eda_macro.png" width="60%" height="60%">
 </center>
 
 - CBR reserves grew from $502bn to $631bn over the sample, with significant drops in the period 2014-2016 (starting of wave 1) and in 2022-2023 (wave 2).
@@ -96,7 +97,7 @@ The ESPO blend (Russia's Pacific export) carries a smaller discount because it s
 ## 6. Trade Reorientation
 
 <center>
-<img src="output/eda_trade_reorientation.png" width="90%" height="450">
+<img src="output/eda_trade_reorientation.png" width="60%" height="60%">
 </center>
  
 Ten bilateral partners are tracked monthly. The post-invasion reorientation is one of the starkest structural breaks in the entire dataset.
@@ -120,7 +121,7 @@ Import-side reorientation is similarly dramatic: China went from ~21% of Russian
 ## 7. Correlation
 
 <center>
-<img src="output/eda_correlation.png" width="90%" height="450">
+<img src="output/eda_correlation.png" width="50%" height="50%">
 </center>
 
 There is a moderate correlation between Brent return and Urals spread change. This indicates that the discount moves with the global oil cycle. Other pairs of variables are almost uncorrelated. 
