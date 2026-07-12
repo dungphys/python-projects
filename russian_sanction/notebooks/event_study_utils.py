@@ -11,7 +11,7 @@ Methodology
    overlapping shocks as independent events.
 2. For every cluster we define:
      - an estimation window  [t0 + EST_START, t0 + EST_END]   (normal-return model)
-     - an event window       [t0 + EVT_PRE,   t0 + EVT_POST]  (abnormal-return window)
+     - an event window       [t0 + EVT_PRE,   t1 + EVT_POST]  (abnormal-return window)
 3. A cluster is flagged CONTAMINATED if any other cluster's anchor date falls
    inside its combined estimation+event span. Additionally, the estimation
    window itself is "cleaned" by dropping any trading day that falls inside
@@ -32,8 +32,8 @@ import pandas as pd
 from scipy import stats
 
 EST_START, EST_END = -120, -21          # estimation window offset (trading days rel. to cluster anchor)
-EVT_PRE, EVT_POST = -2, 10              # event window offset (trading days rel. to cluster anchor)
-CLUSTER_GAP = EVT_POST - EVT_PRE        # trading days: gap <= this => same cluster
+EVT_PRE, EVT_POST = -2, 10            # event window offset (trading days rel. to cluster anchor)
+CLUSTER_GAP = EVT_POST - EVT_PRE + 1       # trading days: gap <= this => same cluster
 
 def load_market_data(commodities_csv, equity_csv):
     # load equity and commodities data, merge on date/year
@@ -58,7 +58,7 @@ ASSET_COLS = {
 }
 ASSET_LABELS = {
     'moex_ret': 'MOEX (equity, log return)',
-    'rub_ret': 'USD/RUB (FX, log return; + = RUB depreciation)',
+    'rub_ret': 'USD/RUB (FX, log return; `+` = RUB depreciation)', # note: USD/RUB is quoted as RUB per USD, so a positive log return means the RUB has depreciated
     'urals_spread_chg': 'Urals-Brent discount (level change, USD/bbl)',
 }
 
@@ -140,19 +140,22 @@ def _first_avail_on_or_after(mkt, col, t):
     return s.iloc[0] if len(s) else np.nan
 
 # compute CAR and SCAR for a given cluster and asset
-def compute_car_for_cluster(mkt, mrow, asset_key, min_est_obs=40):
+def compute_car_for_cluster(mkt, mrow, asset_key, min_est_obs=20):
     lvl_col, ret_col = ASSET_COLS[asset_key]  # level column used for the CAR endpoint calc, return column used for mu/sigma
     est_vals = mkt.loc[mkt['t'].isin(mrow['clean_days']), ret_col].dropna() # estimation-period returns for this asset
     # if there are too few estimation-period observations, return None
+    L1 = len(est_vals)
     if len(est_vals) < min_est_obs:
+        print(f"Skipping cluster {mrow['cluster_id']}, asset {asset_key}: only {len(est_vals)} estimation-period observations (min required = {min_est_obs})")
         return None
     # Computes mu (expected daily change) and sigma (its volatility) from the cleaned estimation period
     # if sigma is zero or NaN, return None
     mu, sigma = est_vals.mean(), est_vals.std(ddof=1) 
     if sigma == 0 or np.isnan(sigma):
+        print(f"Skipping cluster {mrow['cluster_id']}, asset {asset_key}: sigma = {sigma} (estimation-period volatility)")
         return None
     # compute length of the event window in trading days 
-    L = mrow['evt_hi'] - mrow['evt_lo'] + 1
+    L2 = mrow['evt_hi'] - mrow['evt_lo'] + 1
 
     p_start = _last_avail(mkt, lvl_col, mrow['evt_lo'] - 1) # price/level at the last available trading day **BEFORE** the event window
     # compute price/level at the first available trading day on or after the event window end
@@ -165,11 +168,12 @@ def compute_car_for_cluster(mkt, mrow, asset_key, min_est_obs=40):
         return None
     # compute raw cumulative change, CAR, and SCAR
     raw_cum = p_end - p_start # raw cumulative change over the event window
-    car = raw_cum - mu * L # car = actual cumulative change minus expected cumulative change over L days
-    scar = car / (sigma * np.sqrt(L)) # scar = car standardized by the estimation-period volatility and the square root of the event window length
+    car = raw_cum - mu * L2 # car = actual cumulative change minus expected cumulative change over L days
+    scar = car / (sigma * np.sqrt(L2 * (1 + L2 / L1))) # scar = car standardized by the estimation-period volatility and the square root of the event window length
     # check if there are any missing returns in the event window (i.e., a gap in trading)
     had_gap = bool(mkt.loc[(mkt['t'] >= mrow['evt_lo']) & (mkt['t'] <= mrow['evt_hi']), ret_col].isna().any())
-    return dict(mu=mu, sigma=sigma, car=car, L=L, scar=scar, had_gap=had_gap)
+    return dict(mu=mu, sigma=sigma, car=car, L1=L1,
+                L2=L2, scar=scar, had_gap=had_gap)
 
 # build a table of CAR and SCAR for each cluster and asset
 def build_car_table(mkt, meta):
@@ -187,7 +191,7 @@ def build_car_table(mkt, meta):
                 waves=mrow['waves'], jurisdictions=mrow['jurisdictions'],
                 is_energy_any=mrow['is_energy_any'], is_financial_any=mrow['is_financial_any'],
                 contaminated=mrow['contaminated'], had_gap=r['had_gap'],
-                car=r['car'], scar=r['scar'], sigma_est=r['sigma'], L=r['L'],
+                car=r['car'], scar=r['scar'], sigma_est=r['sigma'], L1=r['L1'], L2=r['L2'],
             ))
     return pd.DataFrame(rows)
 

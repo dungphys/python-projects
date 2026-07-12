@@ -16,7 +16,7 @@ overlapping actions as separate events would multiple-count the same market reac
 - ***Normal-return model.*** Constant-mean-return model (Brown & Warner, 1985): the expected daily change is the mean of that asset's own change over a prior estimation window. This is preferred here over a single-factor "market model" because there is no clean, uncorrelated benchmark for MOEX/RUB/Urals-discount simultaneously; using Brent as a factor for the Urals-Brent *spread* would be circular since Brent is already netted out of that variable by construction
 
 - ***Windows.*** Estimation window: **[-120, -21]** trading days before the cluster anchor date. The 21-day gap avoids pre-announcement leakage/anticipation contamination.    
-    Event window: **[-1, +10]** trading days around it $\to$ to measure the abnormal reaction.  
+    Event window: **[-2, +10]** trading days around it $\to$ to measure the abnormal reaction.  
     `CLUSTER_GAP` is chosen to be equal to the width of the event window.
 
 
@@ -30,7 +30,7 @@ overlapping actions as separate events would multiple-count the same market reac
    - Results are reported for the **full sample** and, separately, for the
      **contamination-free subsample only**, as a robustness check.
 - ***Statistics.***
-   - Per-cluster: standardized CAR, $SCAR = CAR / (σ_{est} \sqrt{L})$, tested as
+   - Per-cluster: standardized CAR, $SCAR = CAR / (σ_{est} \sqrt{L_2(1+L_2/L_1)})$, tested as
      approximately t-distributed (Brown & Warner).
    - Across clusters: the **Boehmer–Musumeci–Poulsen (1991) cross-sectional test**,
      which standardizes each event by its own estimation-period volatility before
@@ -52,11 +52,20 @@ Given a cluster separation `CLUSTER_GAP`,
 1. If the separation between two events is not larger than `CLUSTER_GAP`, they belong to the same cluster.
 2. If e1 and e2 are in the same cluster, and e2 and e3 are in the same cluster, then e1 and e3 in the same cluster.
 ```
-With `CLUSTER_GAP = 12`, there are 36 clusters
+With `CLUSTER_GAP = 13`, there are 36 clusters. Among them,
 - 14 clusters in Wave 1
 - 7 clusters in Wave 2
 - 15 clusters in Wave 3 
 
+<center>
+<img src="output/EvtS_clusters.png" width="60%" height="60%">
+<img src="output/EvtS_clusters_2022.png" width="60%" height="60%">
+</center>
+
+Notes:
+- Sanctions become frequent post-2022.
+- Almost every window post-2022 is red (contaminated), while the sparser 2014-2021 actions are mostly green (clean).
+- Mega-cluster c14 with 14 sanctions events 
 
 ## 2. Normal and Abnormal Return (AR) Calculations
 Formulation:
@@ -88,6 +97,10 @@ $$
 
 **Underlying Question**: Does the considered sanction episode produce a return that would not be expected under business-as-usual? (i.e., does event matter?)
 
+<center>
+<img src="output/EvtS_CAR_by_cluster.png" width="90%" height="90%">
+</center>
+
 *Null hypothesis*: Event cluster has no effect (pure noise)
 $$
 H_0: E[CAR] = 0
@@ -98,7 +111,7 @@ $$
 H_1: E[CAR] \neq 0
 $$ 
 
-**t-statistics:**
+**SCAR or t-statistics:**
 
 $$
 t=\frac{CAR}{SE}
@@ -121,7 +134,36 @@ where $F_t(|t|,\nu)$ is the Student's t CDF with dof $\nu = L_1 - K$ (where K is
 
 For large $\nu$, $F_t(|t|,\nu) \to \Phi(|t|)$ (normal CDF).
 
+**Results:**
 
+<center>
+<img src="output/EvtS_moex_sig.png" width="90%" height="90%">
+</center
+
+<center>>
+<img src="output/EvtS_rub_sig.png" width="90%" height="90%">
+</center>
+
+<center>
+<img src="output/EvtS_urals_sig.png" width="90%" height="90%">
+</center>
+
+- For MOEX return, two Clusters 16 and 17 in Wave 2 have large-enough abnormal reaction in magnitude to fall outside the ±10% critical bounds of the t-distribution. This means the observed CARs for these two clusters is statistically distinguishable from zero at the 10% significance level $\to$ the price move is probably a real reaction to sanctions.
+
+- For RUB return, 5 Clusters 3, 4, 15, 16, and 17 have the observed CAR statistically distinguishable from zero at the 10% significance level $\to$ the FX move is probably a real reaction to sanctions.
+ 
+- For Urals discount change, only Cluster 15 has the observed CAR statistically distinguishable from zero at the 10% significance level $\to$ the discount move is probably a real reaction to sanctions.
+
+
+## 4. Cross-sectional (BMP) tests
+
+<center>
+<img src="output/EvtS_bmp.png" width="90%" height="90%">
+</center>
+
+- MOEX (equity): mean_scar = 0.177 (positive, i.e. slight average rise), but p = 0.14. So, one cannot reject "no average abnormal MOEX reaction to sanctions clusters".
+- USD/RUB: mean_scar = -0.326 (negative, meaning average abnormal RUB appreciation/strengthening), but p=0.17 $\to$ not significant
+- Urals-Brent discount: mean_scar = -0.358, bmp_t = -3.05, p = 0.0045 $\to$ genuinely significant.
 
 
 </div>
